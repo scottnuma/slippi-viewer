@@ -17,7 +17,6 @@ interface ReactReplayStore {
     setReplayData: (replayData: ReplayData) => void;
     incrementFrame: () => void;
     clearReplayData: () => void;
-    test: () => void;
 }
 
 
@@ -78,7 +77,6 @@ export const useReplayStore = create<ReactReplayStore>()(
                     const newRenderDatas = getNewRenderDatas(replayData!, 0, animations)
                     set(() => ({ replayData: replayData, renderDatas: newRenderDatas }))
                 },
-                test: () => console.log('test'),
             }),
             {
                 name: 'replay-store',

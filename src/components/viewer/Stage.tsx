@@ -363,7 +363,7 @@ function FountainOfDreams() {
         {(points) => (
           <polyline
             points={points.join(" ")}
-            stroke-dasharray="2,4"
+            strokeDasharray="2,4"
             className="stroke-slate-800"
           />
         )}

@@ -87,8 +87,9 @@ export function Timer() {
       style={{ font: "bold 15px sans-serif", transform: "scaleY(-1)" }}
       textAnchor="middle"
       y="-42%"
-      textcontent={time()}
       className="fill-slate-800"
-    />
+    >
+      {time()}
+    </text>
   );
 }

@@ -63,20 +63,20 @@ export function PlayerHUD(props: { player: number }) {
           style={{ font: "bold 15px sans-serif", transform: "scaleY(-1)" }}
           x={`${position().x}%`}
           y={`${position().y + 4}%`}
-          textAnchor="middle"
-          textcontent={`${Math.floor(renderData()!.playerState.percent)}%`}
+          textAnchor="middle"          
           fill={renderData()!.innerColor}
           stroke="black"
-        />
+        >{`${Math.floor(renderData()!.playerState.percent)}%`}
+        </text>
         <text
           style={{ font: "bold 15px sans-serif", transform: "scaleY(-1)" }}
           x={`${position().x}%`}
           y={`${position().y + 7}%`}
           textAnchor="middle"
-          textcontent={name()}
           fill={renderData()!.innerColor}
           stroke="black"
-        />
+        >{name()}
+        </text>
       </Show>
     </>
   );

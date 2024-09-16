@@ -12,8 +12,8 @@ export function ReplayStateSetter({ file, children }: ReplayStateSetterProps) {
     const replayData = useReplayStore((state) => state.replayData);
     const setReplayData = useReplayStore((state) => state.setReplayData);
     useEffect(() => {
+        if (replayData) return;
         async function fetchReplayData() {
-            if (replayData) return
             const newReplayData = parseReplay(
                 decode(await file.arrayBuffer(), { useTypedArrays: true })
             );

@@ -5,7 +5,7 @@ export function App() {
   const [file, setFile] = useState<File | undefined>();
   return (
     <>
-      <input onChange={e => setFile(e.target?.files?.[0])} type="file" />
+      {!file &&<input onChange={e => setFile(e.target?.files?.[0])} type="file" />}
       {file &&
         <SlippiViewer file={file} />
       }
