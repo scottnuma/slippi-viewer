@@ -1,9 +1,9 @@
 import { create } from 'zustand'
-import { devtools, persist } from 'zustand/middleware'
-import { RenderData, ReplayStore, ReplayStub } from './types';
+import { devtools } from 'zustand/middleware'
+import { RenderData} from './types';
 import { CharacterAnimations, fetchAnimations } from '../viewer/animationCache';
-import { computeRenderData, createAnimationResourceReact, wrapFrame, wrapFrame2 } from './stateHelper';
-import { Frame, ReplayData } from '../common/types';
+import { computeRenderData, createAnimationResourceReact, wrapFrame } from './stateHelper';
+import { ReplayData } from '../common/types';
 
 interface ReactReplayStore {
     frame: number;
@@ -39,24 +39,6 @@ const getNewRenderDatas = (replayData: ReplayData, frame: number, animations: Ch
     return renderDatas
 }
 
-const getAnimations = async (replayData: ReplayData, frame: number) => {
-    const ids: number[] = [];
-    for (let playerIndex = 0; playerIndex < 4; playerIndex++) {
-        const id = createAnimationResourceReact(replayData, frame, playerIndex)()
-        if (id) ids.push(id)
-    }
-    const animations = await Promise.all(ids.map(async id => await fetchAnimations(id)))
-    return animations
-}
-
-const getFrameAndRenderDatas = async (get: () => ReactReplayStore, frame: number) => {
-    const replayData = get().replayData
-    const newFrame = wrapFrame2(replayData!, frame)
-    animations = await getAnimations(replayData!, newFrame);
-    const newRenderDatas = getNewRenderDatas(replayData!, newFrame, animations)
-    return { newFrame, newRenderDatas }
-}
-
 let animations = [];
 export const useReplayStore = create<ReactReplayStore>()(
     devtools(
@@ -88,3 +70,79 @@ export const useReplayStore = create<ReactReplayStore>()(
         }
     )
 )
+
+// call incrementFrame 60 times a second
+// only while running
+// stolen from solid-js
+const incrementFrame = useReplayStore.getState().incrementFrame
+createRAF(
+    targetFPS(
+        () => incrementFrame(),
+        60
+    )
+)
+
+async function getAnimations(replayData: ReplayData, frame: number) {
+    const ids: number[] = [];
+    for (let playerIndex = 0; playerIndex < 4; playerIndex++) {
+        const id = createAnimationResourceReact(replayData, frame, playerIndex)()
+        if (id) ids.push(id)
+    }
+    const animations = await Promise.all(ids.map(async id => await fetchAnimations(id)))
+    return animations
+}
+
+async function getFrameAndRenderDatas(get: () => ReactReplayStore, frame: number) {
+    const replayData = get().replayData
+    const newFrame = wrapFrame(replayData!, frame)
+    animations = await getAnimations(replayData!, newFrame);
+    const newRenderDatas = getNewRenderDatas(replayData!, newFrame, animations)
+    return { newFrame, newRenderDatas }
+}
+
+function createRAF(
+    callback: FrameRequestCallback,
+) {
+    let requestID = 0;
+
+    const loop: FrameRequestCallback = timeStamp => {
+        requestID = requestAnimationFrame(loop);
+        callback(timeStamp);
+    };
+
+    let running = useReplayStore.getState().running
+    const _updateRunning = useReplayStore.subscribe((state) => {
+        if (state.running) {
+            if (running) return;
+            requestID = requestAnimationFrame(loop);
+        }
+        else {
+            if (!running) return;
+            cancelAnimationFrame(requestID);
+        }
+        running = state.running
+    })
+}
+
+function targetFPS(
+    callback: FrameRequestCallback,
+    fps: number,
+): FrameRequestCallback {
+    const interval = (() => {
+        const newInterval = Math.floor(1000 / fps);
+        return () => newInterval;
+    })();
+
+    let elapsed = 0;
+    let lastRun = 0;
+    let missedBy = 0;
+
+    return timeStamp => {
+        elapsed = timeStamp - lastRun;
+        if (Math.ceil(elapsed + missedBy) >= interval()) {
+            lastRun = timeStamp;
+            missedBy = Math.max(elapsed - interval(), 0);
+            callback(timeStamp);
+        }
+    };
+}

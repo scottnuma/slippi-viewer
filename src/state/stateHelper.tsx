@@ -5,7 +5,7 @@ import { parseGameSettings } from "../parser/parser";
 import { CharacterAnimations } from "../viewer/animationCache";
 import { actionMapByInternalId } from "../viewer/characters";
 import { getPlayerOnFrame, getStartOfAction } from "../viewer/viewerUtil";
-import { ReplayStore, RenderData } from "./replayStore";
+import { ReplayStore, RenderData } from "./types";
 import colors from "tailwindcss/colors";
 
 interface ReplayStub {
@@ -213,15 +213,7 @@ function getPlayerColor(
     ][playerIndex][isNana ? 1 : 0];
 }
 
-export function wrapFrame(replayState: ReplayStore, frame: number): number {
-    if (!replayState.replayData) return frame;
-    return (
-        (frame + replayState.replayData.frames.length) %
-        replayState.replayData.frames.length
-    );
-}
-
-export function wrapFrame2(replayData: ReplayData, frame: number): number {
+export function wrapFrame(replayData: ReplayData, frame: number): number {
     if (!replayData) return frame;
     return (
         (frame + replayData.frames.length) %
