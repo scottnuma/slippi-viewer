@@ -11,6 +11,7 @@ export function App() {
     );
     setReplayData(newReplayData);
   }
+
   return (
     <>
       <input onChange={e => {

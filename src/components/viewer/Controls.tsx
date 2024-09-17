@@ -2,6 +2,8 @@
 import { Show } from "../conversion/helpers";
 import { useReplayStore } from "../../state/replayStoreReact";
 import { useRef } from "react";
+import PauseIcon from '@mui/icons-material/Pause';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
 export function Controls() {
   const seekbarInput = useRef<HTMLInputElement>(null);
@@ -11,26 +13,29 @@ export function Controls() {
   const togglePause = useReplayStore((state) => state.togglePause);
   const jump = useReplayStore((state) => state.jump);
 
+  const handleSeekbarInput = () => {
+    if (!seekbarInput.current) return;
+    jump(Number(seekbarInput.current.value))
+  }
+
   return (
     <div className="flex flex-wrap items-center justify-evenly gap-4 rounded-b border border-t-0 py-1 px-2 text-slate-800">
       <Show
         when={running}
         fallback={
           <div
-            className="material-icons cursor-pointer text-[32px] leading-none"
             onClick={() => togglePause()}
             aria-label="Resume playback"
           >
-            play_arrow
+            <PlayArrowIcon />          
           </div>
         }
       >
         <div
-          className="material-icons cursor-pointer text-[32px]"
           onClick={() => togglePause()}
           aria-label="pause playback"
         >
-          pause
+          <PauseIcon />
         </div>
       </Show>
       <input
@@ -40,7 +45,7 @@ export function Controls() {
         ref={seekbarInput}
         value={frame}
         max={replayData!.frames.length - 1}
-        onInput={() => jump(Number(seekbarInput.current!.value))}
+        onInput={handleSeekbarInput}
       />
     </div>
   );
