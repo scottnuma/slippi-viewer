@@ -17,8 +17,9 @@ export function App() {
         if (!e.target?.files?.[0]) return
         handleReplayDataChange(e.target.files[0])
       }} type="file" />
-      <Viewer />
-
+      <div className="flex max-h-screen flex-grow flex-col gap-2 pt-2 pr-4 pl-4 lg:pl-0">
+        <Viewer />
+      </div>    
     </>
   )
 }
