@@ -37,10 +37,10 @@ export function Controls() {
         id="seekbar"
         className="flex-grow accent-slippi-500"
         type="range"
-        // ref={seekbarInput}
+        ref={seekbarInput}
         value={frame}
         max={replayData!.frames.length - 1}
-        // onInput={() => jump(seekbarInput.valueAsNumber)}
+        onInput={() => jump(Number(seekbarInput.current!.value))}
       />
     </div>
   );

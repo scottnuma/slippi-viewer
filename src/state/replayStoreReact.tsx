@@ -11,7 +11,6 @@ interface ReactReplayStore {
     running: boolean;
     fps: number;
     replayData?: ReplayData;
-    currentFrameData?: Frame;
     togglePause: () => void;
     jump: (target: number) => void;
     setReplayData: (replayData: ReplayData) => void;
@@ -50,36 +49,42 @@ const getAnimations = async (replayData: ReplayData, frame: number) => {
     return animations
 }
 
+const getFrameAndRenderDatas = async (get: () => ReactReplayStore, frame: number) => {
+    const replayData = get().replayData
+    const newFrame = wrapFrame2(replayData!, frame)
+    animations = await getAnimations(replayData!, newFrame);
+    const newRenderDatas = getNewRenderDatas(replayData!, newFrame, animations)
+    return { newFrame, newRenderDatas }
+}
+
 let animations = [];
 export const useReplayStore = create<ReactReplayStore>()(
     devtools(
-            (set, get) => ({
-                frame: 0,
-                renderDatas: [],
-                animations: Array(4).fill(undefined),
-                fps: 60,
-                running: false,
-                togglePause: () => set((state) => ({ running: !state.running })),
-                jump: (target: number) => set((state) => ({ frame: wrapFrame2(state.replayData!, target) })),
-                incrementFrame: async () => {
-                    const replayData = get().replayData
-                    const frame = get().frame
-                    const newFrame = wrapFrame2(replayData!, frame + 1)
-                    animations = await getAnimations(replayData!, newFrame);
-                    const newRenderDatas = getNewRenderDatas(replayData!, newFrame, animations)
-                    set(() => {
-                        return ({ frame: newFrame, renderDatas: newRenderDatas })
-                    })
-                },
-                clearReplayData: () => set({ replayData: undefined, renderDatas: [], frame:0, running: false }),
-                setReplayData: async (replayData: ReplayData) => {
-                    animations = await getAnimations(replayData, 0);
-                    const newRenderDatas = getNewRenderDatas(replayData!, 0, animations)
-                    set(() => ({ replayData: replayData, renderDatas: newRenderDatas }))
-                },
-            }),
-            {
-                name: 'replay-store',
-            }
-        )
+        (set, get) => ({
+            frame: 0,
+            renderDatas: [],
+            fps: 60,
+            running: false,
+            togglePause: () => set((state) => ({ running: !state.running })),
+            jump: async (target: number) => {
+                const { newFrame, newRenderDatas } = await getFrameAndRenderDatas(get, target)
+                set(() => ({ frame: newFrame, renderDatas: newRenderDatas }))
+            },
+            incrementFrame: async () => {
+                const frame = get().frame
+                const { newFrame, newRenderDatas } = await getFrameAndRenderDatas(get, frame + 1)
+                set(() => ({ frame: newFrame, renderDatas: newRenderDatas })
+                )
+            },
+            clearReplayData: () => set({ replayData: undefined, renderDatas: [], frame: 0, running: false }),
+            setReplayData: async (replayData: ReplayData, frame = 0) => {
+                animations = await getAnimations(replayData, frame);
+                const newRenderDatas = getNewRenderDatas(replayData, frame, animations)
+                set(() => ({ replayData: replayData, renderDatas: newRenderDatas, frame: frame, running: false }))
+            },
+        }),
+        {
+            name: 'replay-store',
+        }
+    )
 )

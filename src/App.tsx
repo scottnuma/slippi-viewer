@@ -1,14 +1,24 @@
-import { useState } from 'react'
 import './index.css'
-import SlippiViewer from "./SlippiViewer"
+import { decode } from '@shelacek/ubjson';
+import { parseReplay } from './parser/parser';
+import { useReplayStore } from "./state/replayStoreReact";
+import { Viewer } from './components/viewer/Viewer';
 export function App() {
-  const [file, setFile] = useState<File | undefined>();
+  const setReplayData = useReplayStore((state) => state.setReplayData);
+  const handleReplayDataChange = async (file: File) => {
+    const newReplayData = parseReplay(
+      decode(await file.arrayBuffer(), { useTypedArrays: true })
+    );
+    setReplayData(newReplayData);
+  }
   return (
     <>
-      {!file &&<input onChange={e => setFile(e.target?.files?.[0])} type="file" />}
-      {file &&
-        <SlippiViewer file={file} />
-      }
+      <input onChange={e => {
+        if (!e.target?.files?.[0]) return
+        handleReplayDataChange(e.target.files[0])
+      }} type="file" />
+      <Viewer />
+
     </>
   )
 }
