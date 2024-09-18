@@ -51,6 +51,7 @@ const characterZipUrlByExternalId = [
 ];
 
 async function load(url: string): Promise<CharacterAnimations> {
+  console.log(url)
   const response = await fetch(url);
   const animationsZip = await response.blob();
   const fileBuffers = unzipSync(

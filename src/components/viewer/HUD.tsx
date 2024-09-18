@@ -1,4 +1,3 @@
-import React from 'react';
 import { PlayerHUD } from "../../components/viewer/PlayerHUD";
 import { Timer } from "../../components/viewer/Timer";
 import { useReplayStore } from "../../state/replayStoreReact";

@@ -1,6 +1,5 @@
-import { createEffect, createMemo, createSignal, ParentProps } from "solid-js";
 import { useReplayStore } from "../../state/replayStoreReact";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const ZOOM_LEVEL = 1;
 

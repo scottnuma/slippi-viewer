@@ -7,6 +7,7 @@ import { Item } from "../../components/viewer/Item";
 import { Controls } from "../../components/viewer/Controls";
 import { useReplayStore } from "../../state/replayStoreReact";
 import { useCallback } from "react";
+
 export function Viewer() {
   const replayData = useReplayStore((state) => state.replayData);
   const frame = useReplayStore((state) => state.frame);
@@ -17,7 +18,6 @@ export function Viewer() {
     <div className="flex flex-col overflow-y-auto pb-4">
       <Show when={!!replayData}>
         <svg className="rounded-t border bg-slate-50" viewBox="-365 -300 730 600">
-          {/* up = positive y axis */}
           <g className="-scale-y-100">
             <Camera>
               <Stage />

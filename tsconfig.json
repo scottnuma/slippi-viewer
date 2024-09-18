@@ -5,8 +5,8 @@
     { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
-    "paths": {
-      "react": [ "./node_modules/@types/react" ]
-    }
-  }
+    "outDir": "dist",
+    "module": "commonjs",
+    // ... other options ...
+  },
 }

@@ -111,7 +111,7 @@ function createRAF(
     };
 
     let running = useReplayStore.getState().running
-    const _updateRunning = useReplayStore.subscribe((state) => {
+    useReplayStore.subscribe((state) => {
         if (state.running) {
             if (running) return;
             requestID = requestAnimationFrame(loop);

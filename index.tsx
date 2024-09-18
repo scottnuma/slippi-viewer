@@ -1,4 +1,3 @@
-import React from 'react';
 import './src/index.css'
 import { decode } from '@shelacek/ubjson';
 import { parseReplay } from './src/parser/parser';
