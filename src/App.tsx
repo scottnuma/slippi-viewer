@@ -1,4 +1,4 @@
-import SlippiViewer from '../index';
+import SlippiViewer from './index';
 import { useState } from 'react';
 
 export function App() {

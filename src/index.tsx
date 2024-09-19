@@ -1,8 +1,8 @@
-import './src/index.css'
+import './index.css'
 import { decode } from '@shelacek/ubjson';
-import { parseReplay } from './src/parser/parser';
-import { useReplayStore } from "./src/state/replayStoreReact";
-import { Viewer } from './src/components/viewer/Viewer';
+import { parseReplay } from './parser/parser';
+import { useReplayStore } from "./state/replayStoreReact";
+import { Viewer } from './components/viewer/Viewer';
 import { useEffect } from 'react';
 
 interface SlippiViewerProps {
