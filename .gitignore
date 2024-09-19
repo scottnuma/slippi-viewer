@@ -35,9 +35,6 @@ node_modules/
 # Optional npm cache directory
 .npm
 
-# Ignore lock file
-package-lock.json
-
 # Editor folders
 .idea
 .vscode
