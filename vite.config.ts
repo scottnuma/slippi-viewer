@@ -2,11 +2,10 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwind from 'tailwindcss'
 import autoprefixer from 'autoprefixer'
-import dts from 'vite-plugin-dts'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(),  dts({ tsconfigPath: './tsconfig.app.json' })],
+  plugins: [react()],
   build: {
     lib: {
       entry: 'src/index.tsx',
@@ -34,5 +33,5 @@ export default defineConfig({
     postcss: {
       plugins: [tailwind, autoprefixer],
     },
-  }
+  },
 })

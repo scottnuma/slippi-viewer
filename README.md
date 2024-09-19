@@ -6,3 +6,4 @@ If you have any issues with this package, or there are new features you'd like t
 
 USAGE NOTES:
 1. You need to copy public/zips into your app's own public/zips folder, I haven't fixed that yet
+2. No @types/slippilab-vite
