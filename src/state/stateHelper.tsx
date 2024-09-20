@@ -24,7 +24,6 @@ interface ReplayStub {
     }[];
 }
 
-
 export function computeRenderData(
     replayData: ReplayData,
     playerUpdate: PlayerUpdate,
@@ -213,11 +212,16 @@ function getPlayerColor(
     ][playerIndex][isNana ? 1 : 0];
 }
 
-export function wrapFrame(replayData: ReplayData, frame: number): number {
+export function wrapFrame(
+    replayData: ReplayData,
+    frame: number,
+    startFrame = 0,
+    endFrame = replayData.frames.length
+): number {
     if (!replayData) return frame;
+    const frameLength = endFrame - startFrame;
     return (
-        (frame + replayData.frames.length) %
-        replayData.frames.length
+        (frame - startFrame + frameLength) % frameLength + startFrame
     );
 }
 

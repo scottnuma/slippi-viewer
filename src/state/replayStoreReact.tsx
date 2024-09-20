@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import { RenderData} from './types';
+import { RenderData } from './types';
 import { CharacterAnimations, fetchAnimations } from '../viewer/animationCache';
 import { computeRenderData, createAnimationResourceReact, wrapFrame } from './stateHelper';
 import { ReplayData } from '../common/types';
@@ -11,32 +11,12 @@ interface ReactReplayStore {
     running: boolean;
     fps: number;
     replayData?: ReplayData;
+    startFrame?: number;
+    endFrame?: number;
     togglePause: () => void;
     jump: (target: number) => void;
-    setReplayData: (replayData: ReplayData) => void;
+    setReplayData: (replayData: ReplayData, startFrame?: number, endFrame?: number, startOnLoad?: boolean) => void;
     incrementFrame: () => void;
-    clearReplayData: () => void;
-}
-
-
-const getNewRenderDatas = (replayData: ReplayData, frame: number, animations: CharacterAnimations[]) => {
-    const renderDatas = replayData.frames[frame].players
-        .filter((playerUpdate) => playerUpdate)
-        .flatMap((playerUpdate) => {
-            const animations2 = animations[playerUpdate.playerIndex];
-            if (animations === undefined) return [];
-            const renderDatas = [];
-            renderDatas.push(
-                computeRenderData(replayData, playerUpdate, animations2, false)
-            );
-            if (playerUpdate.nanaState != null) {
-                renderDatas.push(
-                    computeRenderData(replayData, playerUpdate, animations2, true)
-                );
-            }
-            return renderDatas;
-        })
-    return renderDatas
 }
 
 let animations = [];
@@ -58,11 +38,17 @@ export const useReplayStore = create<ReactReplayStore>()(
                 set(() => ({ frame: newFrame, renderDatas: newRenderDatas })
                 )
             },
-            clearReplayData: () => set({ replayData: undefined, renderDatas: [], frame: 0, running: false }),
-            setReplayData: async (replayData: ReplayData, frame = 0) => {
-                animations = await getAnimations(replayData, frame);
-                const newRenderDatas = getNewRenderDatas(replayData, frame, animations)
-                set(() => ({ replayData: replayData, renderDatas: newRenderDatas, frame: frame, running: false }))
+            setReplayData: async (replayData: ReplayData, startFrame = 0, endFrame = replayData.frames.length, startOnLoad = false) => {
+                // cant start before 0
+                startFrame = Math.max(0, startFrame)
+                // cant end after the end
+                endFrame = Math.min(replayData.frames.length, endFrame)
+                // cant end before start
+                endFrame = Math.max(endFrame, startFrame + 1)
+
+                animations = await getAnimations(replayData, startFrame);
+                const newRenderDatas = getNewRenderDatas(replayData, startFrame, animations)
+                set(() => ({ replayData: replayData, renderDatas: newRenderDatas, frame: startFrame, running: startOnLoad, startFrame: startFrame, endFrame: endFrame }))
             },
         }),
         {
@@ -94,10 +80,32 @@ async function getAnimations(replayData: ReplayData, frame: number) {
 
 async function getFrameAndRenderDatas(get: () => ReactReplayStore, frame: number) {
     const replayData = get().replayData
-    const newFrame = wrapFrame(replayData!, frame)
+    const startFrame = get().startFrame
+    const endFrame = get().endFrame
+    const newFrame = wrapFrame(replayData!, frame, startFrame, endFrame)
     animations = await getAnimations(replayData!, newFrame);
     const newRenderDatas = getNewRenderDatas(replayData!, newFrame, animations)
     return { newFrame, newRenderDatas }
+}
+
+function getNewRenderDatas (replayData: ReplayData, frame: number, animations: CharacterAnimations[]) {
+    const renderDatas = replayData.frames[frame].players
+        .filter((playerUpdate) => playerUpdate)
+        .flatMap((playerUpdate) => {
+            const animations2 = animations[playerUpdate.playerIndex];
+            if (animations === undefined) return [];
+            const renderDatas = [];
+            renderDatas.push(
+                computeRenderData(replayData, playerUpdate, animations2, false)
+            );
+            if (playerUpdate.nanaState != null) {
+                renderDatas.push(
+                    computeRenderData(replayData, playerUpdate, animations2, true)
+                );
+            }
+            return renderDatas;
+        })
+    return renderDatas
 }
 
 function createRAF(
