@@ -1,8 +1,8 @@
 {
-  "name": "slippilab-vite",
+  "name": "slippi-viewer",
   "version": "0.0.8",
   "type": "module",
-  "main": "dist/slippilab-vite.js",
+  "main": "dist/slippi-viewer.js",
   "files": [
     "dist"
   ],

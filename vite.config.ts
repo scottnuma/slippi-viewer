@@ -12,8 +12,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: 'src/index.tsx',
-      name: 'slippilab-vite',
-      fileName: 'slippilab-vite',
+      name: 'slippi-viewer',
+      fileName: 'slippi-viewer',
       formats: ['es'],
     },
     rollupOptions: {
