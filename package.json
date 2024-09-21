@@ -1,6 +1,6 @@
 {
   "name": "slippi-viewer",
-  "version": "0.0.8",
+  "version": "1.0.0",
   "type": "module",
   "main": "dist/slippi-viewer.js",
   "files": [
