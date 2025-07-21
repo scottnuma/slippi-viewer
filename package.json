@@ -3,6 +3,14 @@
   "version": "2.0.0",
   "type": "module",
   "main": "dist/slippi-viewer.js",
+  "module": "dist/slippi-viewer.js",
+  "types": "dist/slippi-viewer.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/slippi-viewer.js",
+      "types": "./dist/slippi-viewer.d.ts"
+    }
+  },
   "files": [
     "dist"
   ],
